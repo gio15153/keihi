@@ -6,16 +6,11 @@ Imports Selenium.SelectElement
 Imports OpenQA.Selenium.Chrome.ChromeDriverService
 Public Class Form1
 
-
-
-
+    Dim service As Chrome.ChromeDriverService = CreateDefaultService()
+    Dim webDrive As Chrome.ChromeDriver = New Chrome.ChromeDriver(service)
 
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
-        Dim service As Chrome.ChromeDriverService = CreateDefaultService()
-        service.HideCommandPromptWindow = True
-        Dim webDrive As Chrome.ChromeDriver = New Chrome.ChromeDriver(service)
 
         webDrive.Url = "https://login.salesforce.com/?locale=jp"
 
@@ -23,7 +18,7 @@ Public Class Form1
     End Sub
 
 
-    Private Sub StartBtn_Click(sender As Object, e As EventArgs, ByRef webDrive As Chrome.ChromeDriver) Handles startBtn.Click
+    Private Sub StartBtn_Click(sender As Object, e As EventArgs) Handles startBtn.Click
 
         webDrive.Navigate.GoToUrl("https://teamspirit-674--teamspirit.ap5.visual.force.com/apex/AtkEmpExpView?sfdc.tabName=01r7F0000002DXs")
 
@@ -114,7 +109,7 @@ Public Class Form1
     ''' 経費明細に各項目を入力する
     ''' </summary>
     ''' <param name="day"></param>
-    Public Sub InputProcess(day As String, startDay As String, ByRef webDrive As Chrome.ChromeDriver)
+    Public Sub InputProcess(day As String, startDay As String)
 
 
         webDrive.FindElement(By.Id("DlgDetailDate")).Clear()
@@ -149,7 +144,7 @@ Public Class Form1
 
     End Sub
 
-    Private Sub Form1_FormClosed(sender As Object, e As FormClosedEventArgs, ByRef webDrive As Chrome.ChromeDriver) Handles MyBase.FormClosed
+    Private Sub Form1_FormClosed(sender As Object, e As FormClosedEventArgs) Handles MyBase.FormClosed
 
         webDrive.Close()
         webDrive.Quit()
