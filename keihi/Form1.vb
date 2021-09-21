@@ -2,41 +2,48 @@
 Imports OpenQA.Selenium.Chrome.ChromeDriverService
 Public Class Form1
 
-    Public service As Chrome.ChromeDriverService = CreateDefaultService()
-
-    Dim start As GrobalVariable = New GrobalVariable()
 
 
+    Dim start As StartUpObject = New StartUpObject()
+    Dim AccumulationCount As Integer = 0
+
+
+    'Load時にログイン画面を呼び出す
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-
-        'Dim loadDrive As Chrome.ChromeDriver = New Chrome.ChromeDriver
+        Dim userName As String = "@futurerays.biz"
         start.webDrive.Url = "https://login.salesforce.com/?locale=jp"
-
+        start.webDrive.FindElement(By.Id("username")).SendKeys(userName)
 
     End Sub
 
-
+    ''' <summary>
+    ''' 開始ボタンをクリックすると処理を開始
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
     Private Sub StartBtn_Click(sender As Object, e As EventArgs) Handles startBtn.Click
-
-        start.webDrive.Navigate.GoToUrl("https://teamspirit-674--teamspirit.ap5.visual.force.com/apex/AtkEmpExpView?sfdc.tabName=01r7F0000002DXs")
-
-        'Form入力値に対するcheck
-        If FormCheck() = False Then
-            Exit Sub
-        End If
-        Threading.Thread.Sleep(5000)
         Dim startDate As Date = MonthCalendar1.SelectionRange.Start
         Dim _date As Date = startDate
         Dim EndDate As Date = MonthCalendar1.SelectionRange.End
         Dim Dates = New List(Of String)
 
 
+        '経費入力ページに移動
+        start.webDrive.Navigate.GoToUrl("https://teamspirit-674--teamspirit.ap5.visual.force.com/apex/AtkEmpExpView?sfdc.tabName=01r7F0000002DXs")
 
+        '二回目以降のポップアップを承認（初回のエラーを無視）
+        Me.AcceptPopup()
 
+        'Form入力値に対するcheck
+        If FormCheck() = False Then
+            Exit Sub
+        End If
+        Threading.Thread.Sleep(3000)
 
-        'Web画面に入力値を設定
+        '日付の範囲を変数に格納
         '土日は入力しない
+        Dates.Clear()
         For i = startDate.DayOfYear To EndDate.DayOfYear
             If _date.DayOfWeek = DayOfWeek.Saturday Or
                     _date.DayOfWeek = DayOfWeek.Sunday Then
@@ -51,37 +58,32 @@ Public Class Form1
 
         Next
 
-        Try
-            '+ボタンをクリック 
-            'memo--ChromeDriver.Clickでクリックアクションを起こせる
-            'memo--複数のクラスを取得した場合配列で扱うと楽
-            start.webDrive.FindElementsByClassName("png-add")(1).Click()
-            Threading.Thread.Sleep(500)
 
-            '日付を入力する
-            For Each day In Dates
-                '画面に項目を入力する処理
-                InputProcess(day, startDate.ToShortDateString)
-                '次の入力フォームへ
-                start.webDrive.FindElement(By.XPath("/html/body/div[4]/div[2]/div/div[3]/div[1]/button")).Click()
-
-                Threading.Thread.Sleep(100)
-
-            Next
-            MessageBox.Show("処理が正常に終了しました。ブラウザ上で保存を行ってください")
-
-        Catch ex As Exception
-            MessageBox.Show(ex.ToString)
-            start.webDrive.Close()
-            start.webDrive.Quit()
-            Close()
+        '+ボタンをクリック ⇒次の入力フォームを呼び出す
+        'memo--ChromeDriver.FindElement()Clickでクリックアクションを起こせる
+        'memo--複数のクラスを取得した場合配列で扱うと楽
+        start.webDrive.FindElementsByClassName("png-add")(1).Click()
+        Threading.Thread.Sleep(500)
 
 
-        End Try
+        '日数分フォームへの入力処理の繰り返し
+        For Each day In Dates
+
+            InputProcess(day, startDate.ToShortDateString)
+            '次の入力フォームへ
+            start.webDrive.FindElement(By.XPath("/html/body/div[4]/div[2]/div/div[3]/div[1]/button")).Click()
+
+            Threading.Thread.Sleep(100)
+        Next
+
+        MessageBox.Show("処理が正常に終了しました。ブラウザ上で保存を行ってください")
 
 
     End Sub
-
+    ''' <summary>
+    ''' 入力項目のチェック
+    ''' </summary>
+    ''' <returns></returns>
     Public Function FormCheck()
 
         Dim formFlg As Boolean = True
@@ -111,7 +113,7 @@ Public Class Form1
     ''' </summary>
     ''' <param name="day"></param>
     Public Sub InputProcess(day As String, startDay As String)
-
+        'Web画面に各入力値を設定
         '日付
         start.webDrive.FindElement(By.Id("DlgDetailDate")).Clear()
         start.webDrive.FindElement(By.Id("DlgDetailDate")).SendKeys(day)
@@ -119,10 +121,11 @@ Public Class Form1
         '初回限定処理
         If day.Equals(startDay) Then
             '費目
+            '通勤費
             start.webDrive.FindElement(By.Id("DlgDetailExpItem")).Click()
             If expenseTxt.SelectedIndex = 0 Then
                 start.webDrive.FindElement(By.Id("DlgDetailExpItem")).SendKeys(Keys.ArrowDown + Keys.Enter)
-
+                '交通費
             ElseIf expenseTxt.SelectedIndex = 1 Then
                 start.webDrive.FindElement(By.Id("DlgDetailExpItem")).SendKeys(Keys.ArrowDown * 3 + Keys.Enter)　'キー指定は改善の余地あり
 
@@ -132,7 +135,6 @@ Public Class Form1
             Try
                 If RadioButton1.Checked = True Then
                     'memo--XpathはfullXPathで指定
-
                     'start.webDrive.FindElement(By.XPath("/html/body/div[4]/div[2]/div/div[2]/div[3]/div[2]/div/input[1]")).Clear()
 
                 ElseIf RadioButton2.Checked = True Then
@@ -151,10 +153,25 @@ Public Class Form1
 
     End Sub
 
+    ''' <summary>
+    ''' chromeDriverとブラウザを閉じる
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
     Private Sub Form1_FormClosed(sender As Object, e As FormClosedEventArgs) Handles MyBase.FormClosed
 
         start.webDrive.Close()
         start.webDrive.Quit()
+
+    End Sub
+
+    ''' <summary>
+    ''' 二回目以降入力を行った際に表示されるページ再読み込みのポップアップをクリック
+    ''' </summary>
+    Public Sub AcceptPopup()
+
+        On Error Resume Next
+        start.webDrive.SwitchTo.Alert.Accept()
 
     End Sub
 End Class

@@ -1,9 +1,9 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class Form1
     Inherits System.Windows.Forms.Form
 
     'フォームがコンポーネントの一覧をクリーンアップするために dispose をオーバーライドします。
-    <System.Diagnostics.DebuggerNonUserCode()> _
+    <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
@@ -20,7 +20,7 @@ Partial Class Form1
     'メモ: 以下のプロシージャは Windows フォーム デザイナーで必要です。
     'Windows フォーム デザイナーを使用して変更できます。  
     'コード エディターを使って変更しないでください。
-    <System.Diagnostics.DebuggerStepThrough()> _
+    <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.MonthCalendar1 = New System.Windows.Forms.MonthCalendar()
         Me.Label2 = New System.Windows.Forms.Label()
@@ -45,6 +45,7 @@ Partial Class Form1
         '
         Me.MonthCalendar1.Location = New System.Drawing.Point(64, 77)
         Me.MonthCalendar1.MaxSelectionCount = 31
+        Me.MonthCalendar1.MonthlyBoldedDates = New Date() {New Date(CType(0, Long)), New Date(CType(0, Long)), New Date(CType(0, Long)), New Date(CType(0, Long)), New Date(CType(0, Long)), New Date(CType(0, Long))}
         Me.MonthCalendar1.Name = "MonthCalendar1"
         Me.MonthCalendar1.ShowToday = False
         Me.MonthCalendar1.ShowTodayCircle = False
