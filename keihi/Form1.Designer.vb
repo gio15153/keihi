@@ -54,7 +54,7 @@ Partial Class Form1
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(62, 44)
+        Me.Label2.Location = New System.Drawing.Point(62, 56)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(53, 12)
         Me.Label2.TabIndex = 9
@@ -124,7 +124,7 @@ Partial Class Form1
         '
         'startBtn
         '
-        Me.startBtn.Location = New System.Drawing.Point(578, 316)
+        Me.startBtn.Location = New System.Drawing.Point(592, 316)
         Me.startBtn.Name = "startBtn"
         Me.startBtn.Size = New System.Drawing.Size(70, 31)
         Me.startBtn.TabIndex = 8
@@ -178,12 +178,13 @@ Partial Class Form1
         'expenseTxt
         '
         Me.expenseTxt.FormattingEnabled = True
-        Me.expenseTxt.Items.AddRange(New Object() {"通勤費", "交通費"})
+        Me.expenseTxt.Items.AddRange(New Object() {"通勤費", "交通費", "交通費[領収書あり］"})
         Me.expenseTxt.Location = New System.Drawing.Point(460, 69)
         Me.expenseTxt.Name = "expenseTxt"
         Me.expenseTxt.Size = New System.Drawing.Size(202, 20)
         Me.expenseTxt.TabIndex = 1
         Me.expenseTxt.Text = "通勤費"
+        Me.expenseTxt.UseWaitCursor = True
         '
         'Label1
         '

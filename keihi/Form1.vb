@@ -11,14 +11,12 @@ Public Class Form1
     'Load時にログイン画面を呼び出す
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        Dim userName As String = "@futurerays.biz"
         start.webDrive.Url = "https://login.salesforce.com/?locale=jp"
-        start.webDrive.FindElement(By.Id("username")).SendKeys(userName)
 
     End Sub
 
     ''' <summary>
-    ''' 開始ボタンをクリックすると処理を開始
+    ''' 主処理を開始
     ''' </summary>
     ''' <param name="sender"></param>
     ''' <param name="e"></param>
@@ -32,7 +30,7 @@ Public Class Form1
         '経費入力ページに移動
         start.webDrive.Navigate.GoToUrl("https://teamspirit-674--teamspirit.ap5.visual.force.com/apex/AtkEmpExpView?sfdc.tabName=01r7F0000002DXs")
 
-        '二回目以降のポップアップを承認（初回のエラーを無視）
+        '二回目以降のポップアップを承認（エラー回避）
         Me.AcceptPopup()
 
         'Form入力値に対するcheck
@@ -72,7 +70,7 @@ Public Class Form1
             InputProcess(day, startDate.ToShortDateString)
             '次の入力フォームへ
             start.webDrive.FindElement(By.XPath("/html/body/div[4]/div[2]/div/div[3]/div[1]/button")).Click()
-
+            'バッファ
             Threading.Thread.Sleep(100)
         Next
 
@@ -125,9 +123,14 @@ Public Class Form1
             start.webDrive.FindElement(By.Id("DlgDetailExpItem")).Click()
             If expenseTxt.SelectedIndex = 0 Then
                 start.webDrive.FindElement(By.Id("DlgDetailExpItem")).SendKeys(Keys.ArrowDown + Keys.Enter)
-                '交通費
+                '交通費    
             ElseIf expenseTxt.SelectedIndex = 1 Then
-                start.webDrive.FindElement(By.Id("DlgDetailExpItem")).SendKeys(Keys.ArrowDown * 3 + Keys.Enter)　'キー指定は改善の余地あり
+                start.webDrive.FindElement(By.Id("DlgDetailExpItem")).SendKeys(Keys.ArrowDown + Keys.ArrowDown + Keys.ArrowDown + Keys.Enter) 'キー指定は改善の余地あり
+
+            ElseIf expenseTxt.SelectedIndex = 2 Then
+                start.webDrive.FindElement(By.Id("DlgDetailExpItem")).SendKeys(Keys.ArrowDown + Keys.ArrowDown + Keys.ArrowDown + Keys.ArrowDown + Keys.ArrowDown + Keys.Enter) 'キー指定は改善の余地あり
+
+
 
             End If
 
