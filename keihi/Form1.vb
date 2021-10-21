@@ -5,7 +5,6 @@ Public Class Form1
 
 
     Dim start As StartUpObject = New StartUpObject()
-    Dim AccumulationCount As Integer = 0
 
 
     'Load時にログイン画面を呼び出す
@@ -60,7 +59,7 @@ Public Class Form1
         '+ボタンをクリック ⇒次の入力フォームを呼び出す
         'memo--ChromeDriver.FindElement()Clickでクリックアクションを起こせる
         'memo--複数のクラスを取得した場合配列で扱うと楽
-        start.webDrive.FindElementsByClassName("png-add")(1).Click()
+        start.webDrive.FindElements(By.ClassName("png-add"))(1).Click()
         Threading.Thread.Sleep(500)
 
 
