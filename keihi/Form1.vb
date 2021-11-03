@@ -20,10 +20,9 @@ Public Class Form1
     ''' <param name="sender"></param>
     ''' <param name="e"></param>
     Private Sub StartBtn_Click(sender As Object, e As EventArgs) Handles startBtn.Click
-        Dim startDate As Date = MonthCalendar1.SelectionRange.Start
+        Dim startDate As Date = InputDates.Items(0)
         Dim _date As Date = startDate
-        Dim EndDate As Date = MonthCalendar1.SelectionRange.End
-        Dim Dates = New List(Of String)
+        Dim EndDate As Date = InputDates.Items(InputDates.Items.Count - 1)
 
 
         '経費入力ページに移動
@@ -38,22 +37,6 @@ Public Class Form1
         End If
         Threading.Thread.Sleep(3000)
 
-        '日付の範囲を変数に格納
-        '土日は入力しない
-        Dates.Clear()
-        For i = startDate.DayOfYear To EndDate.DayOfYear
-            If _date.DayOfWeek = DayOfWeek.Saturday Or
-                    _date.DayOfWeek = DayOfWeek.Sunday Then
-
-                _date = _date.AddDays(1.0)
-                Continue For
-
-            End If
-
-            Dates.Add(_date.ToShortDateString)
-            _date = _date.AddDays(1.0)
-
-        Next
 
 
         '+ボタンをクリック ⇒次の入力フォームを呼び出す
@@ -64,16 +47,22 @@ Public Class Form1
 
 
         '日数分フォームへの入力処理の繰り返し
-        For Each day In Dates
+        Try
+            For Each day In InputDates.Items
 
-            InputProcess(day, startDate.ToShortDateString)
-            '次の入力フォームへ
-            start.webDrive.FindElement(By.XPath("/html/body/div[4]/div[2]/div/div[3]/div[1]/button")).Click()
-            'バッファ
-            Threading.Thread.Sleep(100)
-        Next
+                InputProcess(day, startDate.ToShortDateString)
+                '次の入力フォームへ
+                start.webDrive.FindElement(By.XPath("/html/body/div[4]/div[2]/div/div[3]/div[1]/button")).Click()
+                'バッファ
+                Threading.Thread.Sleep(100)
+            Next
+            MessageBox.Show("処理が正常に終了しました。ブラウザ上で保存を行ってください")
 
-        MessageBox.Show("処理が正常に終了しました。ブラウザ上で保存を行ってください")
+        Catch ex As Exception
+            MessageBox.Show("エラーが発生したため処理を中断しました。")
+
+        End Try
+
 
 
     End Sub
@@ -110,6 +99,8 @@ Public Class Form1
     ''' </summary>
     ''' <param name="day"></param>
     Public Sub InputProcess(day As String, startDay As String)
+
+
         'Web画面に各入力値を設定
         '日付
         start.webDrive.FindElement(By.Id("DlgDetailDate")).Clear()
@@ -134,8 +125,8 @@ Public Class Form1
             End If
 
             '往復フラグ
-            Try
-                If RadioButton1.Checked = True Then
+
+            If RadioButton1.Checked = True Then
                     'memo--XpathはfullXPathで指定
                     'start.webDrive.FindElement(By.XPath("/html/body/div[4]/div[2]/div/div[2]/div[3]/div[2]/div/input[1]")).Clear()
 
@@ -143,8 +134,7 @@ Public Class Form1
                     start.webDrive.FindElement(By.XPath("/html/body/div[4]/div[2]/div/div[2]/div[3]/div[2]/div/input[1]")).Click()
                 End If
 
-            Catch ex As Exception
-            End Try
+
         End If
 
         start.webDrive.FindElement(By.Id("DlgDetailCost")).Clear()
@@ -174,6 +164,57 @@ Public Class Form1
 
         On Error Resume Next
         start.webDrive.SwitchTo.Alert.Accept()
+
+    End Sub
+
+
+    ''' <summary>
+    ''' 画面に入力する日付のリストに選択した日付を挿入する
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        Dim startDate As Date = MonthCalendar1.SelectionRange.Start
+        Dim _date As Date = startDate
+        Dim EndDate As Date = MonthCalendar1.SelectionRange.End
+        Dim Dates = New List(Of String)
+
+        '日付の範囲を変数Datesに格納
+        '土日は入力しない
+        Dates.Clear()
+        For i = startDate.DayOfYear To EndDate.DayOfYear
+            If _date.DayOfWeek = DayOfWeek.Saturday Or
+                    _date.DayOfWeek = DayOfWeek.Sunday Then
+
+                _date = _date.AddDays(1.0)
+                Continue For
+
+            End If
+
+            Dates.Add(_date.ToShortDateString)
+            _date = _date.AddDays(1.0)
+
+        Next
+
+        For Each day In Dates
+            InputDates.Items.Add(day)
+        Next
+
+    End Sub
+
+    ''' <summary>
+    ''' 選択した日付を画面に入力する日付のリストから削除する
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+        If InputDates.SelectedIndex <> -1 Then
+            While InputDates.SelectedIndex <> -1
+                InputDates.Items.RemoveAt(InputDates.SelectedIndex)
+            End While
+        Else
+            MessageBox.Show("削除する日付を選択してください")
+        End If
 
     End Sub
 End Class
